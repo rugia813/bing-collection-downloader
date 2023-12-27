@@ -1,0 +1,12 @@
+{
+  "name": "bing-collection-download",
+  "version": "1.0",
+  "description": "bulk download images from bing image creator collection",
+  "content_scripts": [
+    {
+      "matches": ["https://www.bing.com/saves*"],
+      "js": ["script.js", "JSZip.js"]
+    }
+  ],
+  "manifest_version": 2
+}
