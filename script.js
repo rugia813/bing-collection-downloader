@@ -3,12 +3,15 @@ const btn = document.createElement('button')
 
 window.onload = () => {
 	// create a btn and then attach
-	btn.style.width = '100%'
+	btn.style.width = '204px'
 	btn.style.paddingTop = '12px'
 	btn.style.paddingBottom = '12px'
 	btn.style.marginTop = '24px'
-	btn.style.borderRadius = '12px'
+	btn.style.borderRadius = '32px'
 	btn.style.border = 'transparent solid 1px'
+	btn.style.cursor = 'pointer'
+	btn.classList.add('primary_btn_shp_clr')
+
 	btn.innerText = 'Download All Images'
 	btn.addEventListener('click', handleClick)
 	document.querySelector('.nav-panel__nav').prepend(btn)
