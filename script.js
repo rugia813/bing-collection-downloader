@@ -31,7 +31,7 @@ function handleClick() {
     },
     body: JSON.stringify({
         "collectionItemType":"all",
-        "maxItemsToFetch":1000,
+        "maxItemsToFetch":9999,
         "shouldFetchMetadata":true
     })
 	})
