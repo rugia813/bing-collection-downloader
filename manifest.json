@@ -1,5 +1,5 @@
 {
-  "name": "bing-collection-download",
+  "name": "bing-collection-downloader",
   "version": "1.0",
   "description": "bulk download images from bing image creator collection",
   "content_scripts": [
@@ -8,5 +8,5 @@
       "js": ["script.js", "JSZip.js"]
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 3
 }
