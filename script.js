@@ -82,6 +82,7 @@ async function downloadImagesAsZip(extractedData) {
 
   // Function to download an image and add it to the zip file
   async function downloadAndAddToZip(url, fileName, title, thumbnails, num) {
+    const shortFileName = fileName.slice(0, 176);
     try {
       const response = await fetch(url);
 
@@ -93,7 +94,7 @@ async function downloadImagesAsZip(extractedData) {
         const metadata = { title };
 
         // Add the image file to the zip with contentId as the file name
-        zip.file(`${num} ${fileName}.jpg`, blob, { metadata });
+        zip.file(`${num} ${shortFileName}.jpg`, blob, { metadata });
 			} else {
 				console.warn(`Failed to download image: ${title}`);
 				thumbnails.forEach(async ({thumbnailUrl}, i) => {
@@ -106,7 +107,7 @@ async function downloadImagesAsZip(extractedData) {
 						const metadata = { title };
 
 						// Add the image file to the zip with contentId as the file name
-						zip.file(`${num}-${i} ${fileName}.jpg`, blob, { metadata });
+						zip.file(`${num}-${i} ${shortFileName}.jpg`, blob, { metadata });
 					}
 				})
 			}
