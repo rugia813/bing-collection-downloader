@@ -1,6 +1,8 @@
 console.log('Bing Collection Download loaded')
 const btn = document.createElement('button')
 
+let totalImages, failedImages = []
+
 window.onload = () => {
 	// create a btn and then attach
 	btn.style.width = '204px'
@@ -39,6 +41,7 @@ function handleClick() {
 	.then(res => {
 		console.log(res);
 		extractedData = extractMediaInfo(res);
+    totalImages = extractedData.length;
 		console.log(extractedData);
 		downloadImagesAsZip(extractedData)
 	})
@@ -82,7 +85,7 @@ async function downloadImagesAsZip(extractedData) {
 
   // Function to download an image and add it to the zip file
   async function downloadAndAddToZip(url, fileName, title, thumbnails, num) {
-    const shortFileName = fileName.slice(0, 176);
+    const shortFileName = fileName.slice(0, 155);
     try {
       const response = await fetch(url);
 
@@ -108,7 +111,10 @@ async function downloadImagesAsZip(extractedData) {
 
 						// Add the image file to the zip with contentId as the file name
 						zip.file(`${num}-${i} ${shortFileName}.jpg`, blob, { metadata });
-					}
+					} else {
+            failedImages.push(fileName);
+            console.warn(`Failed to download thumbnail: ${title}`);
+          }
 				})
 			}
     } catch (error) {
@@ -127,7 +133,10 @@ async function downloadImagesAsZip(extractedData) {
   // Generate the zip file
   const content = await zip.generateAsync({ type: 'blob' })
 		.then(blob => {
-			const zipFileName = `bing-images ${+new Date()}.zip`;
+      const sucImages = totalImages - failedImages.length;
+      console.log('Downloaded', sucImages, 'full images');
+      failedImages.length && console.log('Failed to download', failedImages.length, ' images', failedImages)
+			const zipFileName = `bing-images(${totalImages}) ${+new Date()}.zip`;
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
 			link.download = zipFileName;
