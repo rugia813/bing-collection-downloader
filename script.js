@@ -134,10 +134,11 @@ function extractMediaInfo(data) {
         collection.collectionPage.items.forEach(item => {
           if (item.content && item.content.url && item.content.title && item.content.contentId) {
             const mediaInfo = {
-              MediaUrl: JSON.parse(item.content.customData).MediaUrl,
+              url: JSON.parse(item.content.customData).MediaUrl,
               title: item.content.title,
               contentId: item.content.contentId,
 							thumbnails: item.content.thumbnails,
+              dateModified: new Date(item.dateModified),
             };
             extractedInfo.push(mediaInfo);
           }
@@ -161,7 +162,8 @@ async function downloadImagesAsZip(extractedData, fileName = 'bing-images') {
   const zip = new JSZip();
 
   // Function to download an image and add it to the zip file
-  async function downloadAndAddToZip(url, fileName, title, thumbnails, num) {
+  async function downloadAndAddToZip({url, title, thumbnails, dateModified}, num) {
+    const fileName = title
     const shortFileName = fileName.slice(0, 155);
     try {
       const response = await fetch(url);
@@ -170,11 +172,11 @@ async function downloadImagesAsZip(extractedData, fileName = 'bing-images') {
       if (response.ok) {
         const blob = await response.blob();
 
-        // Embed title in metadata
-        const metadata = { title };
+        // Embed title in comment
+        const comment = title;
 
         // Add the image file to the zip with contentId as the file name
-        zip.file(`${num} ${shortFileName}.jpg`, blob, { metadata });
+        zip.file(`${num} ${shortFileName}.jpg`, blob, { comment, date: dateModified });
 			} else {
 				console.warn(`Failed to download image: ${title}`);
 				thumbnails.forEach(async ({thumbnailUrl}, i) => {
@@ -183,11 +185,11 @@ async function downloadImagesAsZip(extractedData, fileName = 'bing-images') {
 					if (response.ok) {
 						const blob = await response.blob();
 
-						// Embed title in metadata
-						const metadata = { title };
+						// Embed title in comment
+            const comment = title;
 
 						// Add the image file to the zip with contentId as the file name
-						zip.file(`${num}-${i} ${shortFileName}.jpg`, blob, { metadata });
+						zip.file(`${num}-${i} ${shortFileName}.jpg`, blob, { comment, date: dateModified });
 					} else {
             failedImages.push(fileName);
             console.warn(`Failed to download thumbnail: ${title}`);
@@ -201,7 +203,7 @@ async function downloadImagesAsZip(extractedData, fileName = 'bing-images') {
 
   // Download each image and add it to the zip file
   const downloadPromises = extractedData.map((item, i) =>
-    downloadAndAddToZip(item.MediaUrl, item.title, item.title, item.thumbnails, i)
+    downloadAndAddToZip(item, i)
   );
 
   // Wait for all download promises to complete
